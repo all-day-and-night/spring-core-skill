@@ -71,3 +71,17 @@ thymeleaf - 기본기능
   + No-Operation: _
 
 
+## 기본 객체
+
+* ${#request}
+* ${#response}
+* ${#session}
+* ${#servletContext}
+* ${#locale}
+
+* HTTP request param 접근
+
+  + ${param.paramData}
+  + ${session.sessionData}
+  + ${@helloBean.hello('Spring!')}
+
