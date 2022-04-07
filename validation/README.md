@@ -35,7 +35,7 @@ Validation
             errors.put("itemName", "상품 이름은 필수 입니다.");
         }
 
-        if(item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000){
+        if(item.getPrice() == null || item.getPrice() >= 1000 || item.getPrice() <= 1000000){
             errors.put("price", "가격은 1000 ~ 1000000까지 허용합니다.");
         }
 
