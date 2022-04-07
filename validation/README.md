@@ -184,9 +184,65 @@ public ObjectError(String objectName, @Nullable String[] codes, @Nullable Object
 ```
 
 
+## V3
+
+> 오류난 값을 돌려줬지만 messages를 사용하여 오류 메시지를 전역으로 사용할 수 있게 구현하였다.
 
 
+* code
 
+```
+@PostMapping("/add")
+    public String addItemv3(@ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+
+        //검증 로직
+        if(!StringUtils.hasText(item.getItemName())){
+            //bindingResult.addError(new FieldError("item", "itemName", "상품 이름은 필수 입니다."));
+            bindingResult.addError(new FieldError("item", "itemName", item.getItemName(), false, new String[]{"required.item.itemName"}, null, null));
+        }
+
+        if(item.getPrice() == null || item.getPrice() < 1000 || item.getPrice() > 1000000){
+            //bindingResult.addError(new FieldError("item", "price", "가격은 1000~1000000까지 허용합니다."));
+            bindingResult.addError(new FieldError("item", "price", item.getPrice(), false, new String[]{"range.item.price"}, new Object[]{1000, 1000000}, null));
+        }
+
+        if(item.getQuantity() == null || item.getQuantity() <= 0 || item.getQuantity() > 9999){
+            //bindingResult.addError(new FieldError("item", "quantity", "수량은 최대 9999까지 허용합니다."));
+            bindingResult.addError(new FieldError("item", "quantity", item.getQuantity(), false, new String[]{"max.item.quantity"}, new Object[]{9999}, null));
+        }
+
+        // 특정 필드가 아닌 복합 룰 검증
+        if(item.getPrice() != null || item.getQuantity() != null){
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if(resultPrice < 10000){
+                bindingResult.addError(new ObjectError("item", new String[]{"totalPriceMin"},new Object[]{10000, resultPrice}, null));
+            }
+        }
+
+        // 검증에 실패하면 다시 입력폼으로
+        if(bindingResult.hasErrors()){
+            //model.addAttribute("errors", errors);
+            // 모델에 굳이 담지 않아도 스프링에서 자동으로 모델에 담아 전달한다.
+            return "validation/v2/addForm";
+        }
+
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/validation/v2/items/{itemId}";
+    }
+```
+
+> filedError, ObjectError에 code와 args를 사용하여 error 메시지를 가져와 사용한다.
+
+* Error.properties
+
+```
+required.item.itemName=상품 이름은 필수입니다.
+range.item.price=가격은 {0} ~ {1} 까지 허용합니다.
+max.item.quantity=수량은 최대 {0} 까지 허용합니다.
+totalPriceMin=가격 * 수량의 합은 {0}원 이상이어야 합니다. 현재 값 = {1}
+```
 
 
 
