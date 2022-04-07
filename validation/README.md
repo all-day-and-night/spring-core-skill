@@ -69,4 +69,46 @@ Validation
 > 해결할 방법을 찾아보자
 
 
+## V2
+
+* bindingResult
+
+> PostMapping을 하는 controller에서 @ModelAttribute로 받는 DTO뒤에 BindingResult를 매개변수로 받는다.
+
+```
+//field에 값이 존재할 경우
+bindingResult.addError(new FieldError(objectName, field, defaultMessage));
+
+//filed에 값이 존재하지 않고 새로 생성할 경우
+bindingResult.addError(new ObjectError(objectName, defaultMessage));
+```
+
+> 이러한 bindResult를 반환하여 thymeleaf로 view파일에 넘겨주고 errorclass 등을 활용하여 예외 처리를 보여준다.
+
+
+* @ModelAttribute에 바인딩 시 타입 오류가 발생하면?
+
+> BindingResult가 없으면 400오류가 발생하면서 컨트롤러가 호출되지 않고, 오류 페이지로 이동
+
+> BindingResult가 있으면 오류 정보(fieldError나 ObjectError를 BindingResult에 담아서 컨트롤러에 정상호출한다.)
+
+
+
+
+
+* 타임리프 스프링 검증 오류 통합 기능
+
+> 타임리프는 스프링의 BindingResult 를 활용해서 편리하게 검증 오류를 표현하는 기능을 제공한다.
+  + #fields : #fields 로 BindingResult 가 제공하는 검증 오류에 접근할 수 있다.
+  + th:errors : 해당 필드에 오류가 있는 경우에 태그를 출력한다. th:if 의 편의 버전이다.
+  + th:errorclass : th:field 에서 지정한 필드에 오류가 있으면 class 정보를 추가한다.
+
+
+
+
+
+
+
+
+
 
