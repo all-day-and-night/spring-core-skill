@@ -1,4 +1,4 @@
-# spring-mvc-2
+# spring-core-skill
 
 
 ## Index
